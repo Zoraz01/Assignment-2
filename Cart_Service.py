@@ -1,8 +1,12 @@
+import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-import requests  # To make HTTP requests to the Product Service
+import requests  
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///product.sqlite')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cart.sqlite'
 db = SQLAlchemy(app)
 
@@ -22,6 +26,10 @@ def get_cart(user_id):
     total_price = 0
 
     for item in cart_items:
+        
+        product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
+        product_data = requests.get(f'{product_service_url}/products/{item.product_id}').json()['product']
+
         product_data = requests.get(f'http://127.0.0.1:5000/products/{item.product_id}').json()['product']
         cart_list.append({
             'product_name': product_data['name'],

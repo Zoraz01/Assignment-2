@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///product.sqlite')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'product.sqlite')
 db = SQLAlchemy(app)
 
@@ -45,4 +48,4 @@ def add_product():
 
 if __name__ == '__main__':
 #    db.create_all()
-    app.run(debug=True)
+    app.run()
