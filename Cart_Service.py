@@ -26,11 +26,11 @@ def get_cart(user_id):
     total_price = 0
 
     for item in cart_items:
-        
+
         product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
         product_data = requests.get(f'{product_service_url}/products/{item.product_id}').json()['product']
 
-        product_data = requests.get(f'http://127.0.0.1:5000/products/{item.product_id}').json()['product']
+        #product_data = requests.get(f'http://127.0.0.1:5000/products/{item.product_id}').json()['product']
         cart_list.append({
             'product_name': product_data['name'],
             'quantity': item.quantity,
