@@ -48,29 +48,41 @@ def get_cart(user_id):
 @app.route('/cart/<int:user_id>/add/<int:product_id>', methods=['POST'])
 def add_to_cart(user_id, product_id):
     quantity = request.json.get('quantity', 1)
+    
+    # Updating the Product Service
+    product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
+    response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': -quantity})
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to update product quantity"}), 500
+    
     item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
-
     if item:
         item.quantity += quantity
     else:
         new_item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
         db.session.add(new_item)
-
+    
     db.session.commit()
     return jsonify({"message": "Product added to cart"})
 
-# Endpoint 2: delete products from the cart
+# Endpoint 3: delete products from the cart
 @app.route('/cart/<int:user_id>/remove/<int:product_id>', methods=['POST'])
 def remove_from_cart(user_id, product_id):
     item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
-
     if item:
+        
+        # Updating the Product Service
+        product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
+        response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': item.quantity})
+        if response.status_code != 200:
+            return jsonify({"error": "Failed to update product quantity"}), 500
+        
         db.session.delete(item)
         db.session.commit()
         return jsonify({"message": "Product removed from cart"})
     else:
         return jsonify({"error": "Product not in cart"}), 404
-
+    
 if __name__ == '__main__':
 #    db.create_all()  
     app.run(debug=True,port=5004)
