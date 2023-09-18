@@ -5,7 +5,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///product.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///cart.sqlite')
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cart.sqlite'
 db = SQLAlchemy(app)
@@ -93,5 +93,5 @@ def remove_from_cart(user_id, product_id):
         return jsonify({"error": "Product not in cart"}), 404
     
 if __name__ == '__main__':
-    db.create_all()  
+#    db.create_all()  
     app.run(debug=True,port=5004)
