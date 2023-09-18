@@ -53,6 +53,7 @@ def add_to_cart(user_id, product_id):
     product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
     response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': -quantity})
     if response.status_code != 200:
+        app.logger.info("Debug: %s", response.json())
         return jsonify({"error": "Failed to update product quantity"}), 500
     
     item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
@@ -75,6 +76,7 @@ def remove_from_cart(user_id, product_id):
         product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
         response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': item.quantity})
         if response.status_code != 200:
+            app.logger.info("Debug: %s", response.json())
             return jsonify({"error": "Failed to update product quantity"}), 500
         
         db.session.delete(item)
