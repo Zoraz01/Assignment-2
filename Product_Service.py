@@ -48,7 +48,7 @@ def add_product():
     db.session.add(new_product)
     db.session.commit()
     app.logger.info(f"New product added with ID: {new_product.id}")
-    return jsonify({"message": "Task created", "task": {"id": new_product.id, "name": new_product.name, "price": new_product.price, "quantity": new_product.quantity}}), 201
+    return jsonify({"message": "Product created", "product": {"id": new_product.id, "name": new_product.name, "price": new_product.price, "quantity": new_product.quantity}}), 201
 
 #Endpoint 4: Change quantity of product
 @app.route('/products/<int:product_id>/quantity', methods=['PATCH'])
