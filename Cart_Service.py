@@ -5,7 +5,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///product.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///cart.sqlite')
 
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///cart.sqlite'
 db = SQLAlchemy(app)
