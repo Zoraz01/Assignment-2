@@ -82,7 +82,7 @@ def remove_from_cart(user_id, product_id):
 
         # Updating the Product Service
         product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
-        response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': -quantity_to_remove})
+        response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': quantity_to_remove})
         
         if response.status_code != 200:
             app.logger.info("Debug: %s", response.json())
