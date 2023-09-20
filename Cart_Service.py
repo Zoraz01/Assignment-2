@@ -69,19 +69,34 @@ def add_to_cart(user_id, product_id):
 # Endpoint 3: delete products from the cart
 @app.route('/cart/<int:user_id>/remove/<int:product_id>', methods=['POST'])
 def remove_from_cart(user_id, product_id):
+    payload = request.json
+    if not payload or 'quantity' not in payload:
+        return jsonify({"error": "Missing 'quantity' in payload"}), 400
+
+    quantity_to_remove = payload['quantity']
+
     item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
     if item:
-        
+        if item.quantity < quantity_to_remove:
+            return jsonify({"error": "Not enough items in the cart to remove"}), 400
+
         # Updating the Product Service
         product_service_url = os.environ.get('PRODUCT_SERVICE_URL', 'http://127.0.0.1:5000')
-        response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': item.quantity})
+        response = requests.patch(f'{product_service_url}/products/{product_id}/quantity', json={'quantity': -quantity_to_remove})
+        
         if response.status_code != 200:
             app.logger.info("Debug: %s", response.json())
             return jsonify({"error": "Failed to update product quantity"}), 500
-        
-        db.session.delete(item)
+
+        item.quantity -= quantity_to_remove
+
+        if item.quantity == 0:
+            db.session.delete(item)
+        else:
+            db.session.merge(item)
+
         db.session.commit()
-        return jsonify({"message": "Product removed from cart"})
+        return jsonify({"message": "Product quantity updated in cart"})
     else:
         return jsonify({"error": "Product not in cart"}), 404
     
